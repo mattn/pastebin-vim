@@ -67,6 +67,8 @@ function! s:encodeURIComponent(instr)
   return outstr
 endfunction
 
+" The public function. If you've set a pastebin_api_key it'll try to use it
+" Otherwise it'll post anonymously
 function! PasteBin(line1, line2)
 	if (g:pastebin_api_key == "")
 		call PasteBinAnon(a:line1, a:line2)
@@ -75,6 +77,7 @@ function! PasteBin(line1, line2)
 	call PasteBinAuth(a:line1, a:line2)
 endfunction
 
+" Post anonymously
 function! PasteBinAnon(line1, line2)
   let content = join(getline(a:line1, a:line2), "\n")
   let query = [
@@ -99,6 +102,7 @@ function! PasteBinAnon(line1, line2)
   echo s:post('http://pastebin.com/api_public.php', data)
 endfunction
 
+" Post as a specific user
 function! PasteBinAuth(line1, line2)
   call s:PasteBinLogin()
 
@@ -129,6 +133,7 @@ function! PasteBinAuth(line1, line2)
   echo s:post('http://pastebin.com/api/api_post.php', data)
 endfunction
 
+" Get an auth token
 function! s:PasteBinLogin()
   let query = [
     \ 'api_dev_key=%s',
@@ -147,6 +152,7 @@ function! s:PasteBinLogin()
   return s:api_user_key
 endfunction
 
+" Post the passed data to the url
 function! s:post(url, data)
   let file = tempname()
   call writefile([a:data], file)
