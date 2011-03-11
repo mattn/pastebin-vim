@@ -1,4 +1,14 @@
 
+" Section: Plugin header
+"
+" loaded_pastebin is set to 1 when initialization begins, and 2 when it
+" completes.
+if exists('g:loaded_pastebin')
+	finish
+endif
+let g:loaded_pastebin=1
+
+" Section: Meat
 function! s:nr2hex(nr)
   let n = a:nr
   let r = ""
@@ -52,3 +62,5 @@ endfunction
 
 command! -nargs=? -range=% PasteBin :call PasteBin(<line1>, <line2>)
 
+" Section: Plugin completion
+let g:loaded_pastebin=2
