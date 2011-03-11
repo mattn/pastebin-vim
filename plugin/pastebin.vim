@@ -4,7 +4,7 @@
 " loaded_pastebin is set to 1 when initialization begins, and 2 when it
 " completes.
 if exists('g:loaded_pastebin')
-	"finish
+	finish
 endif
 let g:loaded_pastebin=1
 
