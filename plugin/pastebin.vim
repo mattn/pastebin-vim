@@ -87,6 +87,7 @@ endfunction
 function! PasteBin(line1, line2)
 	if (g:pastebin_api_key == "")
 		call PasteBinAnon(a:line1, a:line2)
+		return
 	endif
 
 	call PasteBinAuth(a:line1, a:line2)
