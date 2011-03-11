@@ -9,6 +9,21 @@ endif
 let g:loaded_pastebin=1
 
 " Section: Script variables
+" If you don't want pastes to open directly in your browser - define
+" g:pastebin_browser_command as "" in your vimrc
+if !exists('g:pastebin_browser_command')
+	if has('win32')
+		let g:pastebin_browser_command = "!start rundll32 url.dll,FileProtocolHandler %URL%"
+	elseif has('mac')
+		let g:pastebin_browser_command = "open %URL%"
+	elseif executable('xdg-open')
+		let g:pastebin_browser_command = "xdg-open %URL%"
+	else
+		let g:pastebin_browser_command = "firefox %URL% &"
+	endif
+endif
+
+" used for both anon and authed pastes
 if !exists('g:pastebin_expire_date')
 	let g:pastebin_expire_date = '1H'
 endif
@@ -99,7 +114,8 @@ function! PasteBinAnon(line1, line2)
 	\ )
   unlet query
 
-  echo s:post('http://pastebin.com/api_public.php', data)
+  let url = s:post('http://pastebin.com/api_public.php', data)
+  call s:finished(url)
 endfunction
 
 " Post as a specific user
@@ -130,7 +146,8 @@ function! PasteBinAuth(line1, line2)
 	\ )
   unlet query
 
-  echo s:post('http://pastebin.com/api/api_post.php', data)
+  let url = s:post('http://pastebin.com/api/api_post.php', data)
+  call s:finished(url)
 endfunction
 
 " Get an auth token
@@ -150,6 +167,22 @@ function! s:PasteBinLogin()
 
   let s:api_user_key = s:post('http://pastebin.com/api/api_login.php', data)
   return s:api_user_key
+endfunction
+
+" what to do with the return value - should be a url
+" TODO check it's not an error and act appropriately
+function! s:finished(url)
+  if (g:pastebin_browser_command == '')
+    echo a:url
+	return
+  endif
+
+  let cmd = substitute(g:pastebin_browser_command, '%URL%', a:url, 'g')
+  if cmd =~ '^!'
+	  silent! exec cmd
+  else
+	  call system(cmd)
+  endif
 endfunction
 
 " Post the passed data to the url
