@@ -4,7 +4,7 @@
 " loaded_pastebin is set to 1 when initialization begins, and 2 when it
 " completes.
 if exists('g:loaded_pastebin')
-	finish
+	"finish
 endif
 let g:loaded_pastebin=1
 
@@ -68,42 +68,11 @@ function! s:encodeURIComponent(instr)
 endfunction
 
 function! PasteBin(line1, line2)
-	if (g:pastebin_api_key)
-		call PasteBinAuth(a:line1, a:line2)
+	if (g:pastebin_api_key == "")
+		call PasteBinAnon(a:line1, a:line2)
 	endif
 
-	call PasteBinAnon(a:line1, a:line2)
-endfunction
-
-
-function! PasteBinAuth(line1, line2)
-  let content = join(getline(a:line1, a:line2), "\n")
-  let query = [
-    \ 'api_option=%s',
-    \ 'api_user_key=%s',
-    \ 'api_paste_private=%s',
-    \ 'api_paste_name=%s',
-    \ 'api_paste_expire_date=%s',
-    \ 'api_paste_format=%s',
-    \ 'api_dev_key=%s',
-    \ 'api_paste_code=%s',
-    \ 'paste_code=%s',
-    \ 'paste_format=%s'
-    \ ]
-
-  let s:query = printf(join(query, '&'),
-    \ s:encodeURIComponent('paste'),
-    \ s:encodeURIComponent(s:api_user_key),
-    \ s:encodeURIComponent(g:pastebin_private),
-    \ s:encodeURIComponent(expand('%:p:t')),
-    \ s:encodeURIComponent(g:pastebin_expire_date),
-    \ s:encodeURIComponent(g:pastebin_api_key),
-    \ s:encodeURIComponent(content),
-    \ s:encodeURIComponent(&ft)
-	\ )
-  unlet query
-
-  echo s:post('http://pastebin.com/api/api_post.php', data)
+	call PasteBinAuth(a:line1, a:line2)
 endfunction
 
 function! PasteBinAnon(line1, line2)
@@ -130,11 +99,41 @@ function! PasteBinAnon(line1, line2)
   echo s:post('http://pastebin.com/api_public.php', data)
 endfunction
 
+function! PasteBinAuth(line1, line2)
+  call s:PasteBinLogin()
+
+  let content = join(getline(a:line1, a:line2), "\n")
+  let query = [
+    \ 'api_option=%s',
+    \ 'api_user_key=%s',
+    \ 'api_paste_private=%s',
+    \ 'api_paste_name=%s',
+    \ 'api_paste_expire_date=%s',
+    \ 'api_paste_format=%s',
+    \ 'api_dev_key=%s',
+    \ 'api_paste_code=%s'
+    \ ]
+
+  let data = printf(join(query, '&'),
+    \ s:encodeURIComponent('paste'),
+    \ s:encodeURIComponent(s:api_user_key),
+    \ s:encodeURIComponent(g:pastebin_private),
+    \ s:encodeURIComponent(expand('%:p:t')),
+    \ s:encodeURIComponent(g:pastebin_expire_date),
+    \ s:encodeURIComponent(&ft),
+    \ s:encodeURIComponent(g:pastebin_api_key),
+    \ s:encodeURIComponent(content)
+	\ )
+  unlet query
+
+  echo s:post('http://pastebin.com/api/api_post.php', data)
+endfunction
+
 function! s:PasteBinLogin()
   let query = [
     \ 'api_dev_key=%s',
     \ 'api_user_name=%s',
-    \ 'api_user_passworde=%s'
+    \ 'api_user_password=%s'
     \ ]
 
   let data = printf(join(query, '&'),
@@ -144,7 +143,7 @@ function! s:PasteBinLogin()
 	\ )
   unlet query
 
-  s:api_user_key = s:post('http://pastebin.com/api/api_post.php', data)
+  let s:api_user_key = s:post('http://pastebin.com/api/api_login.php', data)
   return s:api_user_key
 endfunction
 
