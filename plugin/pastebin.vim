@@ -1,6 +1,16 @@
-
-" Section: Plugin header
+"=============================================================================
+" File: pastebin.vim
+" Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
+" Last Change: 16-Mar-2011.
+" Version: 0.1
+" WebPage: http://github.com/mattn/pastebin-vim
+" License: BSD
 "
+" Thanks:
+"   AD7six: bug fix & posting with auth.
+"
+" script type: plugin
+
 " loaded_pastebin is set to 1 when initialization begins, and 2 when it
 " completes.
 if exists('g:loaded_pastebin')
