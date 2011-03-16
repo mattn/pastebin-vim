@@ -4,7 +4,7 @@
 " loaded_pastebin is set to 1 when initialization begins, and 2 when it
 " completes.
 if exists('g:loaded_pastebin')
-	finish
+  finish
 endif
 let g:loaded_pastebin=1
 
@@ -12,42 +12,42 @@ let g:loaded_pastebin=1
 " If you don't want pastes to open directly in your browser - define
 " g:pastebin_browser_command as "" in your vimrc
 if !exists('g:pastebin_browser_command')
-	if has('win32')
-		let g:pastebin_browser_command = "!start rundll32 url.dll,FileProtocolHandler %URL%"
-	elseif has('mac')
-		let g:pastebin_browser_command = "open %URL%"
-	elseif executable('xdg-open')
-		let g:pastebin_browser_command = "xdg-open %URL%"
-	else
-		let g:pastebin_browser_command = "firefox %URL% &"
-	endif
+  if has('win32')
+    let g:pastebin_browser_command = "!start rundll32 url.dll,FileProtocolHandler %URL%"
+  elseif has('mac')
+    let g:pastebin_browser_command = "open %URL%"
+  elseif executable('xdg-open')
+    let g:pastebin_browser_command = "xdg-open %URL%"
+  else
+    let g:pastebin_browser_command = "firefox %URL% &"
+  endif
 endif
 
 " used for both anon and authed pastes
 if !exists('g:pastebin_expire_date')
-	let g:pastebin_expire_date = '1H'
+  let g:pastebin_expire_date = '1H'
 endif
 if !exists('g:pastebin_private')
-	let g:pastebin_private = 0
+  let g:pastebin_private = 0
 endif
 
 " subdomain and email only used for anon 
 if !exists('g:pastebin_subdomain')
-	let g:pastebin_subdomain = ''
+  let g:pastebin_subdomain = ''
 endif
 if !exists('g:pastebin_email')
-	let g:pastebin_email = ''
+  let g:pastebin_email = ''
 endif
 
 " api key, username and password only used for authed pastes
 if !exists('g:pastebin_api_key')
-	let g:pastebin_api_key = ''
+  let g:pastebin_api_key = ''
 endif
 if !exists('g:pastebin_api_username')
-	let g:pastebin_api_username = ''
+  let g:pastebin_api_username = ''
 endif
 if !exists('g:pastebin_api_password')
-	let g:pastebin_api_password = ''
+  let g:pastebin_api_password = ''
 endif
 
 let s:api_user_key = ''
@@ -85,12 +85,12 @@ endfunction
 " The public function. If you've set a pastebin_api_key it'll try to use it
 " Otherwise it'll post anonymously
 function! PasteBin(line1, line2)
-	if (g:pastebin_api_key == "")
-		call PasteBinAnon(a:line1, a:line2)
-		return
-	endif
+  if (g:pastebin_api_key == "")
+    call PasteBinAnon(a:line1, a:line2)
+    return
+  endif
 
-	call PasteBinAuth(a:line1, a:line2)
+  call PasteBinAuth(a:line1, a:line2)
 endfunction
 
 " Post anonymously
@@ -112,7 +112,7 @@ function! PasteBinAnon(line1, line2)
     \ s:encodeURIComponent(&ft),
     \ s:encodeURIComponent(g:pastebin_subdomain),
     \ s:encodeURIComponent(g:pastebin_email)
-	\ )
+  \ )
   unlet query
 
   let url = s:post('http://pastebin.com/api_public.php', data)
@@ -144,7 +144,7 @@ function! PasteBinAuth(line1, line2)
     \ s:encodeURIComponent(&ft),
     \ s:encodeURIComponent(g:pastebin_api_key),
     \ s:encodeURIComponent(content)
-	\ )
+  \ )
   unlet query
 
   let url = s:post('http://pastebin.com/api/api_post.php', data)
@@ -163,7 +163,7 @@ function! s:PasteBinLogin()
     \ s:encodeURIComponent(g:pastebin_api_key),
     \ s:encodeURIComponent(g:pastebin_username),
     \ s:encodeURIComponent(g:pastebin_password)
-	\ )
+  \ )
   unlet query
 
   let s:api_user_key = s:post('http://pastebin.com/api/api_login.php', data)
@@ -175,14 +175,14 @@ endfunction
 function! s:finished(url)
   if (g:pastebin_browser_command == '')
     echo a:url
-	return
+  return
   endif
 
   let cmd = substitute(g:pastebin_browser_command, '%URL%', a:url, 'g')
   if cmd =~ '^!'
-	  silent! exec cmd
+    silent! exec cmd
   else
-	  call system(cmd)
+    call system(cmd)
   endif
 endfunction
 
