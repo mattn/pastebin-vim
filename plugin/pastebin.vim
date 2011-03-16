@@ -40,17 +40,15 @@ if !exists('g:pastebin_email')
 endif
 
 " api key, username and password only used for authed pastes
-if !exists('g:pastebin_api_key')
-  let g:pastebin_api_key = ''
+if !exists('g:pastebin_api_dev_key')
+  let g:pastebin_api_dev_key = ''
 endif
-if !exists('g:pastebin_api_username')
-  let g:pastebin_api_username = ''
+if !exists('g:pastebin_api_user_name')
+  let g:pastebin_api_user_name = ''
 endif
-if !exists('g:pastebin_api_password')
-  let g:pastebin_api_password = ''
+if !exists('g:pastebin_api_user_password')
+  let g:pastebin_api_user_password = ''
 endif
-
-let s:api_user_key = ''
 
 " Section: Meat
 function! s:nr2hex(nr)
@@ -82,15 +80,14 @@ function! s:encodeURIComponent(instr)
   return outstr
 endfunction
 
-" The public function. If you've set a pastebin_api_key it'll try to use it
+" The public function. If you've set a pastebin_api_dev_key it'll try to use it
 " Otherwise it'll post anonymously
 function! PasteBin(line1, line2)
-  if (g:pastebin_api_key == "")
+  if g:pastebin_api_dev_key == ""
     call PasteBinAnon(a:line1, a:line2)
-    return
+  else
+    call PasteBinAuth(a:line1, a:line2)
   endif
-
-  call PasteBinAuth(a:line1, a:line2)
 endfunction
 
 " Post anonymously
@@ -121,7 +118,7 @@ endfunction
 
 " Post as a specific user
 function! PasteBinAuth(line1, line2)
-  call s:PasteBinLogin()
+  let api_user_key = s:PasteBinLogin()
 
   let content = join(getline(a:line1, a:line2), "\n")
   let query = [
@@ -137,12 +134,12 @@ function! PasteBinAuth(line1, line2)
 
   let data = printf(join(query, '&'),
     \ s:encodeURIComponent('paste'),
-    \ s:encodeURIComponent(s:api_user_key),
+    \ s:encodeURIComponent(api_user_key),
     \ s:encodeURIComponent(g:pastebin_private),
     \ s:encodeURIComponent(expand('%:p:t')),
     \ s:encodeURIComponent(g:pastebin_expire_date),
-    \ s:encodeURIComponent(&ft),
-    \ s:encodeURIComponent(g:pastebin_api_key),
+    \ s:encodeURIComponent(&ft != "" ? &ft : "text"),
+    \ s:encodeURIComponent(g:pastebin_api_dev_key),
     \ s:encodeURIComponent(content)
   \ )
   unlet query
@@ -160,14 +157,13 @@ function! s:PasteBinLogin()
     \ ]
 
   let data = printf(join(query, '&'),
-    \ s:encodeURIComponent(g:pastebin_api_key),
-    \ s:encodeURIComponent(g:pastebin_username),
-    \ s:encodeURIComponent(g:pastebin_password)
+    \ s:encodeURIComponent(g:pastebin_api_dev_key),
+    \ s:encodeURIComponent(g:pastebin_api_user_name),
+    \ s:encodeURIComponent(g:pastebin_api_user_password)
   \ )
   unlet query
 
-  let s:api_user_key = s:post('http://pastebin.com/api/api_login.php', data)
-  return s:api_user_key
+  return s:post('http://pastebin.com/api/api_login.php', data)
 endfunction
 
 " what to do with the return value - should be a url
