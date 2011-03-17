@@ -1,0 +1,31 @@
+script_name: PastBin.vim
+script_type: utility
+script_package: plugin/pastebin.vim
+script_version: '0.1'
+required_vim_version: '7.0'
+summary: vimscript for pastebin
+
+detailed_description: |
+  This is vimscript for pastebin (http://pastebin.com/)
+
+  Usage:
+
+    :PasteBin
+      post whole text to pastebin.
+
+    :'<,'>PasteBin
+      post selected text to pastebin.
+
+  Require:
+    curl command (http://curl.haxx.se/)
+    and if you want to use profile of git, it require git command.
+
+install_details: |
+  copy it to your plugin directory.
+
+versions:
+- '0.1': |
+   Initial Upload
+
+# __END__
+# vim: filetype=yaml
