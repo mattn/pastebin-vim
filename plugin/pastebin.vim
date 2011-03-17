@@ -1,7 +1,7 @@
 "=============================================================================
 " File: pastebin.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 16-Mar-2011.
+" Last Change: 17-Mar-2011.
 " Version: 0.1
 " WebPage: http://github.com/mattn/pastebin-vim
 " License: BSD
@@ -179,9 +179,9 @@ endfunction
 " what to do with the return value - should be a url
 " TODO check it's not an error and act appropriately
 function! s:finished(url)
-  if (g:pastebin_browser_command == '')
+  if g:pastebin_browser_command == ''
     echo a:url
-  return
+    return
   endif
 
   let cmd = substitute(g:pastebin_browser_command, '%URL%', a:url, 'g')
