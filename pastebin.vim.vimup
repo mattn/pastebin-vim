@@ -1,7 +1,7 @@
 script_name: PastBin.vim
 script_type: utility
 script_package: plugin/pastebin.vim
-script_version: '0.1'
+script_version: '0.2'
 required_vim_version: '7.0'
 summary: vimscript for pastebin
 
@@ -23,6 +23,8 @@ install_details: |
   copy it to your plugin directory.
 
 versions:
+- '0.2': |
+   g:pastebin_browser_command accept OpenBrowser command.
 - '0.1': |
    Initial Upload
 

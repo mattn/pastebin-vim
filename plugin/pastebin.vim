@@ -1,8 +1,8 @@
 "=============================================================================
 " File: pastebin.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 17-Mar-2011.
-" Version: 0.1
+" Last Change: 25-Mar-2011.
+" Version: 0.2
 " WebPage: http://github.com/mattn/pastebin-vim
 " License: BSD
 "
@@ -22,7 +22,9 @@ let g:loaded_pastebin=1
 " If you don't want pastes to open directly in your browser - define
 " g:pastebin_browser_command as "" in your vimrc
 if !exists('g:pastebin_browser_command')
-  if has('win32')
+  if exists(':OpenBrowser')
+    let g:pastebin_browser_command = ":OpenBrowser %URL%"
+  elseif has('win32')
     let g:pastebin_browser_command = "!start rundll32 url.dll,FileProtocolHandler %URL%"
   elseif has('mac')
     let g:pastebin_browser_command = "open %URL%"
@@ -187,6 +189,8 @@ function! s:finished(url)
   let cmd = substitute(g:pastebin_browser_command, '%URL%', a:url, 'g')
   if cmd =~ '^!'
     silent! exec cmd
+  elseif cmd =~ '^:[A-Z]'
+    exec cmd
   else
     call system(cmd)
   endif
