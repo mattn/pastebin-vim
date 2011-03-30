@@ -62,6 +62,11 @@ if !exists('g:pastebin_api_user_password')
   let g:pastebin_api_user_password = ''
 endif
 
+" List of valid formats, extracted from http://pastebin.com/api#5
+if !exists('g:pastebin_valid_formats')
+  let g:pastebin_valid_formats = ['4cs', '6502acme', '6502kickass', '6502tasm', 'abap', 'actionscript', 'actionscript3', 'ada', 'algol68', 'apache', 'applescript', 'apt_sources', 'asm', 'asp', 'autoconf', 'autohotkey', 'autoit', 'avisynth', 'awk', 'bascomavr', 'bash', 'basic4gl', 'bibtex', 'blitzbasic', 'bnf', 'boo', 'bf', 'c', 'c_mac', 'cil', 'csharp', 'cpp', 'cpp-qt', 'c_loadrunner', 'caddcl', 'cadlisp', 'cfdg', 'chaiscript', 'clojure', 'klonec', 'klonecpp', 'cmake', 'cobol', 'coffeescript', 'cfm', 'css', 'cuesheet', 'd', 'dcs', 'delphi', 'oxygene', 'diff', 'div', 'dos', 'dot', 'e', 'ecmascript', 'eiffel', 'email', 'epc', 'erlang', 'fsharp', 'falcon', 'fo', 'f1', 'fortran', 'freebasic', 'gambas', 'gml', 'gdb', 'genero', 'genie', 'gettext', 'go', 'groovy', 'gwbasic', 'haskell', 'hicest', 'hq9plus', 'html4strict', 'html5', 'icon', 'idl', 'ini', 'inno', 'intercal', 'io', 'j', 'java', 'java5', 'javascript', 'jquery', 'kixtart', 'latex', 'lb', 'lsl2', 'lisp', 'llvm', 'locobasic', 'logtalk', 'lolcode', 'lotusformulas', 'lotusscript', 'lscript', 'lua', 'm68k', 'magiksf', 'make', 'mapbasic', 'matlab', 'mirc', 'mmix', 'modula2', 'modula3', '68000devpac', 'mpasm', 'mxml', 'mysql', 'newlisp', 'text', 'nsis', 'oberon2', 'objeck', 'objc', 'ocaml-brief', 'ocaml', 'pf', 'glsl', 'oobas', 'oracle11', 'oracle8', 'oz', 'pascal', 'pawn', 'pcre', 'per', 'perl', 'perl6', 'php', 'php-brief', 'pic16', 'pike', 'pixelbender', 'plsql', 'postgresql', 'povray', 'powershell', 'powerbuilder', 'proftpd', 'progress', 'prolog', 'properties', 'providex', 'purebasic', 'pycon', 'python', 'q', 'qbasic', 'rsplus', 'rails', 'rebol', 'reg', 'robots', 'rpmspec', 'ruby', 'gnuplot', 'sas', 'scala', 'scheme', 'scilab', 'sdlbasic', 'smalltalk', 'smarty', 'sql', 'systemverilog', 'tsql', 'tcl', 'teraterm', 'thinbasic', 'typoscript', 'unicon', 'uscript', 'vala', 'vbnet', 'verilog', 'vhdl', 'vim', 'visualprolog', 'vb', 'visualfoxpro', 'whitespace', 'whois', 'winbatch', 'xbasic', 'xml', 'xorg_conf', 'xpp', 'yaml', 'z80', 'zxbasic']
+endif
+
 " Section: Meat
 function! s:nr2hex(nr)
   let n = a:nr
@@ -118,7 +123,7 @@ function! PasteBinAnon(line1, line2)
     \ s:encodeURIComponent(g:pastebin_expire_date),
     \ s:encodeURIComponent(expand('%:p:t')),
     \ s:encodeURIComponent(content),
-    \ s:encodeURIComponent(&ft),
+    \ s:encodeURIComponent(s:GetPasteFormat()),
     \ s:encodeURIComponent(g:pastebin_subdomain),
     \ s:encodeURIComponent(g:pastebin_email)
   \ )
@@ -150,7 +155,7 @@ function! PasteBinAuth(line1, line2)
     \ s:encodeURIComponent(g:pastebin_private),
     \ s:encodeURIComponent(expand('%:p:t')),
     \ s:encodeURIComponent(g:pastebin_expire_date),
-    \ s:encodeURIComponent(&ft != "" ? &ft : "text"),
+    \ s:encodeURIComponent(s:GetPasteFormat()),
     \ s:encodeURIComponent(g:pastebin_api_dev_key),
     \ s:encodeURIComponent(content)
   \ )
@@ -158,6 +163,14 @@ function! PasteBinAuth(line1, line2)
 
   let url = s:post('http://pastebin.com/api/api_post.php', data)
   call s:finished(url)
+endfunction
+
+" Get the (valid) format/type of this paste.
+function! s:GetPasteFormat()
+  if index(g:pastebin_valid_formats, &ft) != -1
+    return &ft
+  endif
+  return "text"
 endfunction
 
 " Get an auth token
