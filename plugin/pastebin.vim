@@ -179,8 +179,11 @@ function! s:PasteBinLogin()
 endfunction
 
 " what to do with the return value - should be a url
-" TODO check it's not an error and act appropriately
 function! s:finished(url)
+  if a:url !~? '^https\?://'
+    echoerr "PasteBin: an error occurred:" a:url
+    return
+  endif
   if g:pastebin_browser_command == ''
     echo a:url
     return
