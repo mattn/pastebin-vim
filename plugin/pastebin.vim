@@ -1,7 +1,7 @@
 "=============================================================================
 " File: pastebin.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Mar-2011.
+" Last Change: 24-Sep-2012.
 " Version: 0.2
 " WebPage: http://github.com/mattn/pastebin-vim
 " License: BSD
@@ -129,7 +129,7 @@ function! PasteBinAnon(line1, line2)
   \ )
   unlet query
 
-  let url = s:post('http://pastebin.com/api_public.php', data)
+  let url = s:post('http://pastebin.com/api/api_post.php', data)
   call s:finished(url)
 endfunction
 
