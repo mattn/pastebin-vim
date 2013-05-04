@@ -37,7 +37,7 @@ endif
 
 " used for both anon and authed pastes
 if !exists('g:pastebin_expire_date')
-  let g:pastebin_expire_date = '1H'
+  let g:pastebin_expire_date = 'N'
 endif
 if !exists('g:pastebin_private')
   let g:pastebin_private = 0
@@ -100,42 +100,15 @@ endfunction
 " The public function. If you've set a pastebin_api_dev_key it'll try to use it
 " Otherwise it'll post anonymously
 function! PasteBin(line1, line2)
-  if g:pastebin_api_dev_key == ""
-    call PasteBinAnon(a:line1, a:line2)
-  else
-    call PasteBinAuth(a:line1, a:line2)
-  endif
-endfunction
-
-" Post anonymously
-function! PasteBinAnon(line1, line2)
-  let content = join(getline(a:line1, a:line2), "\n")
-  let query = [
-    \ 'paste_expire_date=%s',
-    \ 'paste_name=%s',
-    \ 'paste_code=%s',
-    \ 'paste_format=%s',
-    \ 'paste_subdomain=%s',
-    \ 'paste_email=%s'
-    \ ]
-
-  let data = printf(join(query, '&'),
-    \ s:encodeURIComponent(g:pastebin_expire_date),
-    \ s:encodeURIComponent(expand('%:p:t')),
-    \ s:encodeURIComponent(content),
-    \ s:encodeURIComponent(s:GetPasteFormat()),
-    \ s:encodeURIComponent(g:pastebin_subdomain),
-    \ s:encodeURIComponent(g:pastebin_email)
-  \ )
-  unlet query
-
-  let url = s:post('http://pastebin.com/api/api_post.php', data)
-  call s:finished(url)
+  call PasteBinAuth(a:line1, a:line2)
 endfunction
 
 " Post as a specific user
 function! PasteBinAuth(line1, line2)
-  let api_user_key = s:PasteBinLogin()
+  let api_user_key = ''
+  if g:pastebin_api_user_name != '' && g:pastebin_api_user_password != ''
+    let api_user_key = s:PasteBinLogin()
+  endif 
 
   let content = join(getline(a:line1, a:line2), "\n")
   let query = [
