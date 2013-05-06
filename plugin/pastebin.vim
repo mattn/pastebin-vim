@@ -106,7 +106,9 @@ endfunction
 " Post as a specific user
 function! PasteBinAuth(line1, line2)
   let api_user_key = ''
-  if g:pastebin_api_user_name != '' && g:pastebin_api_user_password != ''
+  if g:pastebin_api_user_key != ''
+    let api_user_key = g:pastebin_api_user_key
+  elseif g:pastebin_api_user_name != '' && g:pastebin_api_user_password != ''
     let api_user_key = s:PasteBinLogin()
   endif 
 
