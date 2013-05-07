@@ -2,12 +2,12 @@
 " File: pastebin.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 07-May-2013.
-" Version: 0.2
+" Version: 0.3
 " WebPage: http://github.com/mattn/pastebin-vim
 " License: BSD
 "
 " Thanks:
-"   AD7six: bug fix & posting with auth.
+"   AD7six, Ivan Glushkov, blueyed, gliush
 "
 " script type: plugin
 
